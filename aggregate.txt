@@ -1,0 +1,48 @@
+1)mydb> db.book.aggregate([{$match:{authors:'Faisal Abid'}},{$project:{authors:1,categories:1}}])
+
+2)mydb> db.book.aggregate([{$match:{'categories.1':'Internet'}}])
+
+3)mydb> db.book.updateMany({pageCount:{$gt:500},$expr:{$eq:[{$year:'$publishedDate'},2009]}},{$set:{status:'under going'}})
+
+4)mydb> db.book.aggregate([{$match:{$and:[{longDescription:/.*highlighting.*/},{longDescription:/.*depth.*/}]}}])
+
+5)mydb> db.book.find({'$expr':{$eq:[{$year:'$publishedDate'},2009]}})
+
+6)mydb> db.book.aggregate([{$match:{pageCount:{$in:[500,556,670]}}}]);
+
+7)mydb> db.book.updateMany({$or:[{pageCount:{$gt:200,$lt:500}},{pageCount:{$gt:500}}]},{$push:{'categories':{$each:['kindle','hard bind']}}})
+
+8)mydb> db.book.find({thumbnailUrl:{exists:true}})
+
+9)mydb> db.book.updateMany({$and:[{title:/^F1/},{title:/.*a.*/}]},{$push:{'type':{$each:['fiction','moral stories','adventure']}}})
+
+10)mydb> db.book.updateMany({},{$push:{'comments':{$each:[{'comment':'like the book'},{date:ISODate('2019-09-01')}]}}})
+
+11)mydb> db.book.updateMany({title:/^[HhMm].*[sS].$/},{$push:{'authors.1':'myAuthor'}})
+
+12)mydb> db.book.updateMany({'authors.0':'Gal Shachor'},{$inc:{pageCount:100}})
+
+13)mydb> db.book.updateMany({authors:'Magnus Rydin'},{$set:{authors:'Fr'}})
+
+14)mydb> db.book.aggregate([{$match:{$or:[{pageCount:{$gt:300}},{pageCount:{$lt:500}},{title:/^a/},{isbn:/^193/}]}}])
+
+
+
+
+
+1)mydb> db.book.aggregate([{$match:{isbn:/^193/}},{$project:{PC:{$add:[{$multiply:['$pageCount',100]},{$mod:['$pageCount',7]}]}}}])
+
+2)mydb> db.book.aggregate([{$project:{bookCode:{$concat:[{$substr:['$title',0,3]},{$substr:['$isbn',3,3]}]}}}])
+
+3)mydb> db.book.aggregate([{$group:{_id:[null],sum:{$sum:'$pageCount'},max:{$max:'$pageCount'},min:{$min:'$pageCount'}}}])
+[ { _id: [ null ], sum: 125171, max: 1101, min: 0 } ]
+
+4)mydb> db.book.aggregate([{$group:{_id:'$categories',sum:{$sum:'$pageCount'},max:{$max:'$pageCount'},min:{$min:'$pageCount'},count:{$sum:1}}},{$sort:{count:1}}])
+
+5)mydb> db.book.aggregate([{$unwind:'$authors'},{$match:{authors:'Faisal Abid'}},{$project:{title:1,pageCount:1,authors:1}}])
+
+6)mydb> db.book.aggregate([{$project:{title:1,pageCount:1,state:{$cond:[{$lt:[{$year:'$publishedDate'},2010]},'old','in stock']}}}])
+
+7)mydb> db.book.aggregate([{$project:{yearj:{$year:'$publishedDate'}}},{$match:{yearj:{$in:[2010,2011,2012]}}}])
+
+8)mydb> db.book.aggregate([{$group:{_id:'$title',max:{$max:'$pageCount'}}},{$project:{title:1,isbn:1,pageCount:1}},{$skip:3},{$limit:3}])
